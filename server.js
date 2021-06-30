@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const bootcamps = require("./routes/bootcamps");
+const courses = require("./routes/courses");
 const path = require("path");
 const colors = require("colors");
 const connectDB = require("./config/db");
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
 app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/v1/courses", courses);
 
 //Error Handler middleware
 app.use(errorHandler);
