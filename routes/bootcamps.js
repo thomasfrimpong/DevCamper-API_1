@@ -8,7 +8,9 @@ const {
   addBootcamp,
   updateBootcamp,
   deleteBootcamp,
+  uploadBootcampPhoto,
 } = require("../controllers/bootcamp");
+const { protect, authorize } = require("../middleware/auth");
 
 //Re-route into other router resources
 router.use("/:bootcampId/courses", courseRouter);
@@ -17,10 +19,17 @@ router.get("/", getBootcamps);
 
 router.get("/:id", getBootcamp);
 
-router.post("/", addBootcamp);
+router.post("/", protect, addBootcamp);
 
-router.put("/:id", updateBootcamp);
+router.put("/:id", protect, authorize("admin", "publisher"), updateBootcamp);
 
-router.delete("/:id", deleteBootcamp);
+router.delete("/:id", protect, authorize("admin", "publisher"), deleteBootcamp);
+
+router.put(
+  "/:id/photo",
+  protect,
+  authorize("admin", "publisher"),
+  uploadBootcampPhoto
+);
 
 module.exports = router;

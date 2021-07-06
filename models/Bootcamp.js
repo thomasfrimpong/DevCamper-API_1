@@ -90,10 +90,24 @@ const BootcampSchema = new mongoose.Schema({
   city: String,
   state: String,
   country: String,
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+});
+
+//Cascade delete courses when a bootcamp is deleted
+BootcampSchema.pre("remove", async function (next) {
+  await console.log(
+    `Courses are being deleted from bootcamp ${this._id}`.orange
+  );
+  await this.model("Course").deleteMany({ bootcamp: this._id });
+  next();
 });
 
 module.exports = mongoose.model("Bootcamp", BootcampSchema);
