@@ -145,13 +145,26 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
       message: "Password Reset Successfully",
     });
 
-    await passwordResetToken.deleteOne();
+    await passwordResetToken.remove();
     res.status(200).json({ success: true, data: "Email sent" });
   } catch (error) {
     console.log(error);
 
     return next(new ErrorResponse("Email could not be sent", 500));
   }
+});
+
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select("+password");
+
+  if (!(await user.matchPassword(req.body.currentPassword))) {
+    return next(new ErrorResponse("Password is incorrect", 401));
+  }
+
+  user.password = req.body.newPassword;
+  await user.save();
+
+  sendResponseToken(user, 200, res);
 });
 
 //
@@ -169,11 +182,10 @@ const sendResponseToken = (user, statusCode, res) => {
   if (process.env.NODE_ENV == "production") {
     options.secure = true;
   }
-  console.log(options);
+  //console.log(options);
 
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
-    data: user,
     token,
   });
 };

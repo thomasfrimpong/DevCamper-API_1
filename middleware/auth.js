@@ -25,7 +25,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
     //Get users details
     req.user = await User.findById(decoded.id);
-    console.log(req.user);
+    //console.log(req.user);
     next();
   } catch (error) {
     console.error(error);
